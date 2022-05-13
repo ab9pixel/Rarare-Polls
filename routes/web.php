@@ -13,9 +13,9 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    echo "working";
-});
+// $router->get('/', function () use ($router) {
+//     echo "working";
+// });
 
 
 $router->group(['prefix'=>'api'],function() use ($router){
