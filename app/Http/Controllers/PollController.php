@@ -14,7 +14,7 @@ class PollController extends Controller
 
     public function list()
     {
-        $polls = Poll::get();
+        $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->get();
         return response()->json($polls);
     }
 
