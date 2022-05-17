@@ -19,7 +19,7 @@
 
 
 $router->group(['prefix'=>'api'],function() use ($router){
-    $router->get('/','PollController@list');
+    $router->get('/{count}/{user_id}','PollController@list');
     $router->get('find/{id}','PollController@find');
     $router->get('delete/{id}','PollController@delete');
 
