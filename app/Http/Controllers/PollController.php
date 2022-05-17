@@ -115,7 +115,8 @@ class PollController extends Controller
         $comment->comment = $request->comment;
         $comment->save();
 
-        return response()->json($comment);
+        $comments = Comment::where('parent_id', $request->parent_id)->get();
+        return response()->json($comments);
     }
 
     public function like(Request $request)
