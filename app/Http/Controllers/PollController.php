@@ -177,8 +177,16 @@ class PollController extends Controller
         $user_option->option_id = $request->option_id;
         $user_option->save();
 
+        $polls=Poll::find($request->parent_id);
+
         $option_array=array();
         $option=Option::where(['parent_id'=>$request->parent_id])->get();
+
+        if($polls->audience<=count($option)){
+            $polls->status=1;
+            $polls->save();
+        }
+
         foreach($option as $item){
             $option_array[$item->id]=count(UserOption::where(['option_id'=>$item->id])->get());
         }
