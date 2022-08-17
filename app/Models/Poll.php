@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Poll extends Model
 {
-    protected $appends = ['liked_users','user','exist_users','marked_option','progress'];
+    protected $appends = ['liked_users','user','exist_users','marked_option','progress','total_record'];
 
     public function comments()
     {
@@ -45,6 +45,11 @@ class Poll extends Model
         $percentage=round(($user_option/$audience)*100);
         return $percentage;
     }
+
+    public function getTotalRecordAttribute()
+	{
+		return $this->count();
+	}
 
     public function getUserAttribute()
     {
