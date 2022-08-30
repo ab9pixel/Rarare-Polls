@@ -116,6 +116,19 @@ class PollController extends Controller
         $comment->save();
 
         $comments = Comment::where('parent_id', $request->parent_id)->get();
+
+        $polls = Poll::find($request->parent_id);
+        if ($polls->participation == 1) {
+            $post['user_id'] = $polls->user_id;
+            $post['action'] = "Commented";
+            $post['type'] = "Polls";
+            $post['vote_question'] = $polls->vote_question;
+            $post['message'] = $polls->description;
+            $post['url'] = "https://staging.rarare.com/proposal?id=".$request->parent_id;
+            $post['title'] = $polls->title;
+
+            $this->send_notification($post);
+        }
         return response()->json($comments);
     }
 
@@ -150,6 +163,19 @@ class PollController extends Controller
         $like->save();
 
         $likes = Like::where(['parent_id' => $request->parent_id])->count();
+
+        $polls = Poll::find($request->parent_id);
+        if ($polls->participation == 1) {
+            $post['user_id'] = $polls->user_id;
+            $post['action'] = "Liked";
+            $post['type'] = "Polls";
+            $post['vote_question'] = $polls->vote_question;
+            $post['message'] = $polls->description;
+            $post['url'] = "https://staging.rarare.com/proposal?id=".$request->parent_id;
+            $post['title'] = $polls->title;
+
+            $this->send_notification($post);
+        }
 
         return response()->json($likes);
     }
@@ -191,6 +217,19 @@ class PollController extends Controller
             $option_array[$item->id]=count(UserOption::where(['option_id'=>$item->id])->get());
         }
 
+        $polls = Poll::find($request->parent_id);
+        if ($polls->participation == 1) {
+            $post['user_id'] = $polls->user_id;
+            $post['action'] = "Voted";
+            $post['type'] = "Polls";
+            $post['vote_question'] = $polls->vote_question;
+            $post['message'] = $polls->description;
+            $post['url'] = "https://staging.rarare.com/proposal?id=".$request->parent_id;
+            $post['title'] = $polls->title;
+
+            $this->send_notification($post);
+        }
+
         return response()->json($option_array);
     }
 
@@ -205,5 +244,36 @@ class PollController extends Controller
             $polls->delete();
         }
         return response()->json(['message'=>'Deleted']);
+    }
+
+    public function send_notification($post)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://rrci.staging.rarare.com/proposal/subscribe/email',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'title' => $post['title'],
+                'type' => $post['type'],
+                'vote_question' => $post['vote_question'],
+                'message' => $post['message'],
+                'action' => $post['action'],
+                'url' => $post['url'],
+                'user_id' => $post['user_id']
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return true;
     }
 }
