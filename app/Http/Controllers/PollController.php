@@ -124,7 +124,7 @@ class PollController extends Controller
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
             $post['message'] = $polls->description;
-            $post['url'] = "https://staging.rarare.com/proposal?id=".$request->parent_id;
+            $post['url'] = "https://staging.rarare.com/poll-proposal?id=".$request->parent_id;
             $post['title'] = $polls->title;
 
             $this->send_notification($post);
@@ -171,7 +171,7 @@ class PollController extends Controller
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
             $post['message'] = $polls->description;
-            $post['url'] = "https://staging.rarare.com/proposal?id=".$request->parent_id;
+            $post['url'] = "https://staging.rarare.com/poll-proposal?id=".$request->parent_id;
             $post['title'] = $polls->title;
 
             $this->send_notification($post);
@@ -224,7 +224,7 @@ class PollController extends Controller
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
             $post['message'] = $polls->description;
-            $post['url'] = "https://staging.rarare.com/proposal?id=".$request->parent_id;
+            $post['url'] = "https://staging.rarare.com/poll-proposal?id=".$request->parent_id;
             $post['title'] = $polls->title;
 
             $this->send_notification($post);
