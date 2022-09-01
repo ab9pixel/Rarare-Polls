@@ -13,13 +13,12 @@ use Illuminate\Support\Facades\Validator;
 class PollController extends Controller
 {
 
-    public function list($count,$user_id)
+    public function list($count, $user_id)
     {
-        if($user_id==0){
+        if ($user_id == 0) {
             $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->limit($count)->get();
-        }
-        else{
-            $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id',$user_id)->limit($count)->get();
+        } else {
+            $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->limit($count)->get();
         }
         return response()->json($polls);
     }
@@ -51,10 +50,9 @@ class PollController extends Controller
             ], 200);
         }
 
-        if(isset($request->id)){
+        if (isset($request->id)) {
             $polls = Poll::find($request->id);
-        }
-        else{
+        } else {
             $polls = new Poll;
         }
 
@@ -72,7 +70,7 @@ class PollController extends Controller
         $polls->vote_question = $request->vote_question;
         $polls->user_id = $request->user_id;
         if ($polls->save()) {
-            if(!isset($request->id)){
+            if (!isset($request->id)) {
                 foreach ($request->vote_option as $key => $vote_option) {
                     $option = new Option;
                     $option->parent_id = $polls->id;
@@ -124,9 +122,9 @@ class PollController extends Controller
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
             $post['message'] = $polls->description;
-            $post['url'] = "https://staging.rarare.com/poll-proposal?id=".$request->parent_id;
+            $post['url'] = "https://staging.rarare.com/poll-proposal?id=" . $request->parent_id;
             $post['title'] = $polls->title;
-
+            $post['sender_id'] = $request->user_id;
             $this->send_notification($post);
         }
         return response()->json($comments);
@@ -148,15 +146,15 @@ class PollController extends Controller
             ], 200);
         }
 
-        $liked=Like::where(['user_id'=>$request->user_id,'parent_id'=>$request->parent_id])->first();
-        
-        if(!is_null($liked)){
+        $liked = Like::where(['user_id' => $request->user_id, 'parent_id' => $request->parent_id])->first();
+
+        if (!is_null($liked)) {
             $liked->delete();
             $likes = Like::where(['parent_id' => $request->parent_id])->count();
 
             return response()->json($likes);
         }
-        
+
         $like = new Like;
         $like->user_id = $request->user_id;
         $like->parent_id = $request->parent_id;
@@ -171,9 +169,9 @@ class PollController extends Controller
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
             $post['message'] = $polls->description;
-            $post['url'] = "https://staging.rarare.com/poll-proposal?id=".$request->parent_id;
+            $post['url'] = "https://staging.rarare.com/poll-proposal?id=" . $request->parent_id;
             $post['title'] = $polls->title;
-
+            $post['sender_id'] = $request->user_id;
             $this->send_notification($post);
         }
 
@@ -203,18 +201,18 @@ class PollController extends Controller
         $user_option->option_id = $request->option_id;
         $user_option->save();
 
-        $polls=Poll::find($request->parent_id);
+        $polls = Poll::find($request->parent_id);
 
-        $option_array=array();
-        $option=Option::where(['parent_id'=>$request->parent_id])->get();
+        $option_array = array();
+        $option = Option::where(['parent_id' => $request->parent_id])->get();
 
-        if($polls->audience<=count($option)){
-            $polls->status=1;
+        if ($polls->audience <= count($option)) {
+            $polls->status = 1;
             $polls->save();
         }
 
-        foreach($option as $item){
-            $option_array[$item->id]=count(UserOption::where(['option_id'=>$item->id])->get());
+        foreach ($option as $item) {
+            $option_array[$item->id] = count(UserOption::where(['option_id' => $item->id])->get());
         }
 
         $polls = Poll::find($request->parent_id);
@@ -224,9 +222,9 @@ class PollController extends Controller
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
             $post['message'] = $polls->description;
-            $post['url'] = "https://staging.rarare.com/poll-proposal?id=".$request->parent_id;
+            $post['url'] = "https://staging.rarare.com/poll-proposal?id=" . $request->parent_id;
             $post['title'] = $polls->title;
-
+            $post['sender_id'] = $request->user_id;
             $this->send_notification($post);
         }
 
@@ -235,15 +233,15 @@ class PollController extends Controller
 
     public function delete($id)
     {
-        $polls = Poll::with('comments', 'options','likes','user_option')->find($id);
-        if(!is_null($polls)){
+        $polls = Poll::with('comments', 'options', 'likes', 'user_option')->find($id);
+        if (!is_null($polls)) {
             $polls->comments()->delete();
             $polls->user_option()->delete();
             $polls->likes()->delete();
             $polls->options()->delete();
             $polls->delete();
         }
-        return response()->json(['message'=>'Deleted']);
+        return response()->json(['message' => 'Deleted']);
     }
 
     public function send_notification($post)
@@ -266,7 +264,8 @@ class PollController extends Controller
                 'message' => $post['message'],
                 'action' => $post['action'],
                 'url' => $post['url'],
-                'user_id' => $post['user_id']
+                'user_id' => $post['user_id'],
+                'sender_id' => $post['sender_id']
             ),
         ));
 
