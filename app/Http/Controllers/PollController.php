@@ -17,15 +17,15 @@ class PollController extends Controller
     {
         if ($count != 0) {
             if ($user_id == 0) {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('id','desc')->limit($count)->get();
             } else {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('id','desc')->limit($count)->get();
             }
         } else {
             if ($user_id == 0) {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('id','desc')->get();
             } else {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('id','desc')->get();
             }
         }
         return response()->json($polls);
