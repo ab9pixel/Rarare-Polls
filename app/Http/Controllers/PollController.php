@@ -105,6 +105,7 @@ class PollController extends Controller
         $polls->end_time = $request->end_time;
         $polls->participation = $request->participation;
         $polls->vote_question = $request->vote_question;
+	    $consensus_forming->timezone = $request->timezone;
         $polls->user_id = $request->user_id;
         if ($polls->save()) {
             if (!isset($request->id)) {
