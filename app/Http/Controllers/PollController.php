@@ -17,15 +17,15 @@ class PollController extends Controller
     {
         if ($count != 0) {
 	        if ($type == "l") {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('created_at','desc')->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
             } else {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('created_at','desc')->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
             }
         } else {
 	        if ($type == "l") {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('created_at','desc')->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
             } else {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('created_at','desc')->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
             }
         }
 
