@@ -156,6 +156,7 @@ class PollController extends Controller
         $polls = Poll::find($request->parent_id);
         if ($polls->participation == 1) {
             $post['user_id'] = $polls->user_id;
+            $post['object_id'] = $polls->id;
             $post['action'] = "Commented";
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
@@ -203,6 +204,7 @@ class PollController extends Controller
         $polls = Poll::find($request->parent_id);
         if ($polls->participation == 1) {
             $post['user_id'] = $polls->user_id;
+            $post['object_id'] = $polls->id;
             $post['action'] = "Liked";
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
@@ -256,6 +258,7 @@ class PollController extends Controller
         $polls = Poll::find($request->parent_id);
         if ($polls->participation == 1) {
             $post['user_id'] = $polls->user_id;
+            $post['object_id'] = $polls->id;
             $post['action'] = "Voted";
             $post['type'] = "Polls";
             $post['vote_question'] = $polls->vote_question;
@@ -303,6 +306,7 @@ class PollController extends Controller
                 'action' => $post['action'],
                 'url' => $post['url'],
                 'user_id' => $post['user_id'],
+                'object_id' => $post['object_id'],
                 'sender_id' => $post['sender_id']
             ),
         ));
