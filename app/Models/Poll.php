@@ -102,13 +102,13 @@ class Poll extends Model
 	    $end=$end_dt->format('Y-m-d h:i A');
 
 	    if($start <= $now && $end >= $now){
-	    	return "Ongoing";
+	    	return "In Progress";
 	    }
 
 	    if($start > $now){
 	    	return "Pending";
 	    }
 
-	    return "Past";
+	    return "Completed";
     }
 }
