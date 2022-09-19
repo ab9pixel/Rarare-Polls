@@ -85,6 +85,7 @@ class Poll extends Model
     }
 
     public function getStatusAttribute(){
+        $id=$this->id;
 	    $time = gmmktime();
 	    $now= date("Y-m-d h:i A", $time);
 
@@ -102,19 +103,19 @@ class Poll extends Model
 	    $end=$end_dt->format('Y-m-d h:i A');
 
 	    if($start <= $now && $end >= $now){
-            $status = polls::find($id);
+            $status = Poll::find($id);
             $status->status = '1';
             $status->update();
             return "In Progress";
         }
 
         if ($start > $now) {
-            $status = polls::find($id);
+            $status = Poll::find($id);
             $status->status = '0';
             $status->update();
             return "Pending";
         }
-            $status = polls::find($id);
+            $status = Poll::find($id);
             $status->status = '2';
             $status->update();
             return "Completed";
