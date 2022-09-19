@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Poll extends Model
 {
-    protected $appends = ['liked_users', 'user', 'exist_users', 'marked_option', 'progress', 'total_record'];
+    protected $appends = ['status','liked_users', 'user', 'exist_users', 'marked_option', 'progress', 'total_record'];
 
     public function comments()
     {
@@ -101,7 +101,7 @@ class Poll extends Model
 	    $end_dt->setTimezone(new \DateTimeZone('UTC'));
 	    $end=$end_dt->format('Y-m-d h:i A');
 
-	    if($start < $now && $end > $now){
+	    if($start <= $now && $end >= $now){
 	    	return "In Progress";
 	    }
 
