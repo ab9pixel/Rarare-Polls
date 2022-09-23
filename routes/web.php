@@ -24,6 +24,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
     $router->get('delete/{id}','PollController@delete');
 
     $router->post('/save','PollController@save');
+    $router->post('/search','PollController@search');
     $router->post('/like','PollController@like');
     $router->post('/comment','PollController@comment');
     $router->post('/user/option','PollController@user_option');
