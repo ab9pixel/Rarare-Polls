@@ -66,9 +66,22 @@ class PollController extends Controller
         $lat = $request->latitude;
         $lng = $request->longitude;
 
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:255',
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ]);
 
-        $polls = Poll::where('title', 'like', '%' . $title . '%')->orderBy( 'status', 'desc' )->orderBy( 'created_at', 'desc' )->get();
+        if ($validator->fails()) {
+            $messages = $validator->messages()->all();
 
+            return response()->json([
+                'status' => 'Error',
+                'message' => $messages[0],
+            ], 200);
+        }
+
+        $polls = Poll::where('title', 'ilike', '%'.$title.'%')->orderBy( 'status', 'desc' )->orderBy( 'created_at', 'desc' )->get();
 
         if ( ! $polls->isEmpty() ) {
 
@@ -89,7 +102,7 @@ class PollController extends Controller
 
                 if ( $mile > 30 ) {
                     $polls->forget( $key );
-                    $data = []  ;
+
                 } else {
                     $data[] = $forming;
                 }
