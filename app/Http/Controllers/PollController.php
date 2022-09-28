@@ -49,7 +49,7 @@ class PollController extends Controller
 				    if ($mile > 30) {
 					    $polls->forget($key);
 				    } else {
-					    array_push($data, $poll);
+                        $data[] = $poll;
 				    }
 			    }
 		    }
@@ -57,7 +57,13 @@ class PollController extends Controller
 		    $data = $polls;
 	    }
 
-	    return response()->json($data);
+        if(count($data) > 0){
+
+        }else{
+            $data = [];
+        }
+
+        return response()->json(['msg' => 'success', 'data' => $data, 'count' => count($data)]);
     }
 
     public function search( Request $request )
