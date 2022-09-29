@@ -15,55 +15,58 @@ class PollController extends Controller
 
     public function list($count, $user_id, $type, $isHome)
     {
+
+        $poll = Poll::withCount('comments', 'likes')->with('comments', 'options')->get();
+
+        $user = $this->get_user($user_id);
+        $result = array();
+
+        if (!is_null($user->latitude) && !is_null($user->longitude)) {
+
+            foreach ($poll as $key => $pol) {
+                $source = [
+                    'lat' => $pol->latitude,
+                    'lng' => $pol->longitude
+                ];
+
+                $destination = [
+                    'lat' => $user->latitude,
+                    'lng' => $user->longitude
+                ];
+
+                $mile = $this->calculate_distance($source, $destination);
+
+                if ($mile > 30) {
+                    $poll->forget($key);
+                } else {
+                    $result[] = $pol->id;
+                }
+            }
+        }else{
+            return response()->json(['Error' => 'User Latitude Or Longitude is empty']);
+        }
+        if(count($result) > 0){
+
+        }else{
+            $data = [];
+            return response()->json(['msg' => 'success', 'data' => $data, 'count' => count($data)]);
+        }
+
         if ($count != 0) {
 	        if ($type == "l") {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->whereIn('id', $result)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
             } else {
                 $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
             }
         } else {
 	        if ($type == "l") {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->whereIn('id', $result)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
             } else {
                 $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
             }
         }
 
-	    $data = [];
-	    if ($type == "l") {
-		    $user = $this->get_user($user_id);
-		    if (!is_null($user->latitude)) {
-			    foreach ($polls as $key => $poll) {
-				    $source = [
-					    'lat' => $poll->latitude,
-					    'lng' => $poll->longitude
-				    ];
-
-				    $destination = [
-					    'lat' => $user->latitude,
-					    'lng' => $user->longitude
-				    ];
-
-				    $mile = $this->calculate_distance($source, $destination);
-
-				    if ($mile > 30) {
-					    $polls->forget($key);
-				    } else {
-                        $data[] = $poll;
-				    }
-			    }
-		    }
-	    } else {
-		    $data = $polls;
-	    }
-
-        if(count($data) > 0){
-
-        }else{
-            $data = [];
-        }
-
-        return response()->json(['msg' => 'success', 'data' => $data, 'count' => count($data)]);
+        return response()->json(['msg' => 'success', 'data' => $polls, 'count' => count($polls)]);
     }
 
     public function search( Request $request )
