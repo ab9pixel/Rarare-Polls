@@ -49,24 +49,24 @@ class PollController extends Controller
 
         }else{
             $data = [];
-            return response()->json(['msg' => 'success', 'data' => $data, 'count' => count($data)]);
+            return response()->json(['msg' => 'success', 'data' => $data, 'count' => count($poll)]);
         }
 
         if ($count != 0) {
 	        if ($type == "l") {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->whereIn('id', $result)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->whereIn('id', $result)->orderBy( 'created_at', 'desc' )->orderByRaw('CASE WHEN status = 1 THEN 1 WHEN status = 0 THEN 2 WHEN status = 2 THEN 3 END')->limit($count)->get();
             } else {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->limit($count)->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy( 'created_at', 'desc' )->orderByRaw('CASE WHEN status = 1 THEN 1 WHEN status = 0 THEN 2 WHEN status = 2 THEN 3 END')->limit($count)->get();
             }
         } else {
 	        if ($type == "l") {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->whereIn('id', $result)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->whereIn('id', $result)->orderBy( 'created_at', 'desc' )->orderByRaw('CASE WHEN status = 1 THEN 1 WHEN status = 0 THEN 2 WHEN status = 2 THEN 3 END')->get();
             } else {
-                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
+                $polls = Poll::withCount('comments', 'likes')->with('comments', 'options')->where('user_id', $user_id)->orderBy( 'created_at', 'desc' )->orderByRaw('CASE WHEN status = 1 THEN 1 WHEN status = 0 THEN 2 WHEN status = 2 THEN 3 END')->get();
             }
         }
 
-        return response()->json(['msg' => 'success', 'data' => $polls, 'count' => count($polls)]);
+        return response()->json(['msg' => 'success', 'data' => $polls, 'count' => count($poll)]);
     }
 
     public function search( Request $request )
