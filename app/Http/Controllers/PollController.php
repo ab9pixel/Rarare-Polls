@@ -18,6 +18,11 @@ class PollController extends Controller
 
         $poll = Poll::withCount('comments', 'likes')->with('comments', 'options')->get();
 
+        if($count != 0 && $user_id == 0 && $type == 'l'){
+            $poll = Poll::withCount('comments', 'likes')->with('comments', 'options')->orderBy( 'created_at', 'desc' )->limit($count)->get();
+            return response()->json(['msg' => 'success', 'data' => $poll, 'count' => count($poll)]);
+        }
+
         $user = $this->get_user($user_id);
         $result = array();
 
