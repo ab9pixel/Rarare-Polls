@@ -125,7 +125,9 @@ class PollController extends Controller
         }else {
             $data = []  ;
         }
-
+        if(empty($data)){
+            $data = []  ;
+        }
         return response()->json($data);
 
     }
